@@ -30,7 +30,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 0;
+            padding: 20px 0;
             border-bottom: 1px solid #1e40af;
             margin-bottom: 20px;
         }
@@ -39,87 +39,110 @@
             flex: 1;
         }
         
-        .status-section {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-        
-        .status-info {
-            text-align: right;
-        }
-        
-        .share-section {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
         .title {
-            font-size: 22px;
+            font-size: 24px;
             font-weight: 600;
             color: #ffffff;
-            margin-bottom: 3px;
+            margin-bottom: 6px;
+            letter-spacing: -0.02em;
         }
         
         .subtitle {
-            font-size: 12px;
+            font-size: 13px;
             color: #9ca3af;
+            font-weight: 400;
+        }
+        
+        .status-section {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+        
+        .threat-status {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 6px;
         }
         
         .threat-level {
             background: #dc2626;
             color: white;
-            padding: 4px 8px;
+            padding: 6px 12px;
             border-radius: 4px;
-            font-weight: 500;
-            font-size: 10px;
-            margin-bottom: 4px;
-            display: inline-block;
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
-        .last-update {
-            font-size: 10px;
+        .update-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
             color: #6b7280;
         }
         
+        .last-update-label {
+            color: #9ca3af;
+        }
+        
+        .last-update-time {
+            color: #ffffff;
+            font-weight: 500;
+        }
+        
         .refresh-btn {
-            background: #1e40af;
-            border: none;
-            color: white;
-            padding: 3px 6px;
-            border-radius: 3px;
+            background: #374151;
+            border: 1px solid #4b5563;
+            color: #d1d5db;
+            padding: 4px 8px;
+            border-radius: 4px;
             cursor: pointer;
-            font-size: 9px;
-            margin-left: 6px;
-            transition: background 0.15s;
+            font-size: 10px;
+            transition: all 0.15s;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
         }
         
         .refresh-btn:hover {
-            background: #2563eb;
+            background: #4b5563;
+            border-color: #6b7280;
+            color: #ffffff;
+        }
+        
+        .share-section {
+            display: flex;
+            align-items: center;
         }
         
         .share-btn {
             background: #1e40af;
             border: none;
             color: white;
-            padding: 6px 12px;
-            border-radius: 4px;
+            padding: 8px 16px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 11px;
-            transition: background 0.15s;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.15s;
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
         }
         
         .share-btn:hover {
             background: #2563eb;
+            transform: translateY(-1px);
         }
         
         .share-btn svg {
-            width: 12px;
-            height: 12px;
+            width: 14px;
+            height: 14px;
         }
         
         .share-dropdown {
@@ -485,10 +508,11 @@
                 <p class="subtitle">Real-time threat monitoring and tactical intelligence</p>
             </div>
             <div class="status-section">
-                <div class="status-info">
+                <div class="threat-status">
                     <div class="threat-level" id="threatLevel">THREAT LEVEL: HIGH</div>
-                    <div class="last-update">
-                        Last Updated: <span id="lastUpdate">Loading...</span>
+                    <div class="update-info">
+                        <span class="last-update-label">Last Updated:</span>
+                        <span class="last-update-time" id="lastUpdate">Loading...</span>
                         <button class="refresh-btn" onclick="loadLatestData()">Refresh</button>
                     </div>
                 </div>
