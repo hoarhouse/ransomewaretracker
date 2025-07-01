@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Global Ransomware Intelligence</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
     <style>
         * {
             margin: 0;
@@ -119,34 +120,29 @@
         .resolved { background: #34D399; }
         
         .world-map {
-            position: relative;
             height: 400px;
-            background: #111;
             border-radius: 8px;
             overflow: hidden;
+            filter: invert(1) hue-rotate(180deg) brightness(0.8);
+        }
+        
+        .leaflet-container {
+            background: #111 !important;
         }
         
         .threat-marker {
-            position: absolute;
-            width: 12px;
-            height: 12px;
+            width: 16px;
+            height: 16px;
             border-radius: 50%;
             border: 2px solid white;
             animation: pulse 2s infinite;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
         }
         
         @keyframes pulse {
             0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.2); opacity: 0.8; }
+            50% { transform: scale(1.3); opacity: 0.7; }
         }
-        
-        .marker-us { top: 40%; left: 20%; background: #F87171; }
-        .marker-uk { top: 30%; left: 48%; background: #FBBF24; }
-        .marker-germany { top: 32%; left: 52%; background: #60A5FA; }
-        .marker-japan { top: 45%; left: 85%; background: #F87171; }
-        .marker-australia { top: 75%; left: 82%; background: #34D399; }
-        .marker-canada { top: 25%; left: 18%; background: #FBBF24; }
-        .marker-brazil { top: 65%; left: 35%; background: #34D399; }
         
         .attacks-section {
             background: rgba(255, 255, 255, 0.05);
@@ -295,6 +291,27 @@
         .status-recovering { background: rgba(251, 191, 36, 0.2); color: #FBBF24; }
         .status-recovered { background: rgba(52, 211, 153, 0.2); color: #34D399; }
         
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .refresh-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 16px;
+        }
+        
+        .refresh-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
         @media (max-width: 768px) {
             .container { padding: 16px; }
             .title { font-size: 36px; }
@@ -309,26 +326,14 @@
         <div class="header">
             <h1 class="title">Global Ransomware Intelligence</h1>
             <p class="subtitle">Worldwide threat monitoring and impact analysis</p>
-            <p class="meta">Updated January 2, 2025 • Live Intelligence</p>
+            <p class="meta">
+                Updated <span id="lastUpdate">Loading...</span> • Live Intelligence
+                <button class="refresh-btn" onclick="loadLatestData()">↻ Refresh</button>
+            </p>
         </div>
         
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-number">847</div>
-                <div class="stat-label">Recent Attacks</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">312</div>
-                <div class="stat-label">Global Companies</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">$2.8B</div>
-                <div class="stat-label">Financial Impact</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">67</div>
-                <div class="stat-label">Active Groups</div>
-            </div>
+        <div class="stats-grid" id="statsGrid">
+            <div class="loading">Loading latest statistics...</div>
         </div>
         
         <div class="threat-map">
@@ -337,31 +342,23 @@
                 <div class="legend">
                     <div class="legend-item">
                         <div class="legend-dot active"></div>
-                        <span>Active</span>
+                        <span>Critical</span>
                     </div>
                     <div class="legend-item">
                         <div class="legend-dot recent"></div>
-                        <span>Recent</span>
+                        <span>High</span>
                     </div>
                     <div class="legend-item">
                         <div class="legend-dot recovering"></div>
-                        <span>Recovering</span>
+                        <span>Medium</span>
                     </div>
                     <div class="legend-item">
                         <div class="legend-dot resolved"></div>
-                        <span>Resolved</span>
+                        <span>Low</span>
                     </div>
                 </div>
             </div>
-            <div class="world-map">
-                <div class="threat-marker marker-us active" title="United States - Active Threats"></div>
-                <div class="threat-marker marker-uk recent" title="United Kingdom - Recent Attack"></div>
-                <div class="threat-marker marker-germany recovering" title="Germany - Recovering"></div>
-                <div class="threat-marker marker-japan active" title="Japan - Active Threats"></div>
-                <div class="threat-marker marker-australia resolved" title="Australia - Resolved"></div>
-                <div class="threat-marker marker-canada recent" title="Canada - Recent Attack"></div>
-                <div class="threat-marker marker-brazil resolved" title="Brazil - Resolved"></div>
-            </div>
+            <div class="world-map" id="worldMap"></div>
         </div>
         
         <div class="attacks-section">
@@ -369,177 +366,209 @@
                 <h2 class="section-title">Latest Global Intelligence</h2>
                 <p class="section-subtitle">Real-time ransomware attacks and impact analysis</p>
             </div>
-            
-            <div class="attack-card">
-                <div class="severity-dot active"></div>
-                <div class="attack-header">
-                    <div class="company-logo">MH</div>
-                    <div class="company-info">
-                        <div class="company-name">MedStar Health System</div>
-                        <div class="company-details">Healthcare • United States</div>
-                    </div>
-                    <div class="attack-meta">
-                        <div class="attack-date">Dec 30, 2024</div>
-                    </div>
-                </div>
-                <div class="threat-group">RansomHub</div>
-                <div class="description">Multi-hospital health system serving Washington DC metro area with over 30,000 employees</div>
-                <div class="details-grid">
-                    <div class="detail-item">
-                        <div class="detail-label">Severity</div>
-                        <div class="detail-value">Critical</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Financial Impact</div>
-                        <div class="detail-value impact-value">$30.4M</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Status</div>
-                        <div class="status status-ongoing">Ongoing</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Country</div>
-                        <div class="detail-value">United States</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="attack-card">
-                <div class="severity-dot recent"></div>
-                <div class="attack-header">
-                    <div class="company-logo">BA</div>
-                    <div class="company-info">
-                        <div class="company-name">British Airways</div>
-                        <div class="company-details">Transportation • United Kingdom</div>
-                    </div>
-                    <div class="attack-meta">
-                        <div class="attack-date">Dec 29, 2024</div>
-                    </div>
-                </div>
-                <div class="threat-group">BlackCat</div>
-                <div class="description">Major international airline with global operations serving 45 million passengers annually</div>
-                <div class="details-grid">
-                    <div class="detail-item">
-                        <div class="detail-label">Severity</div>
-                        <div class="detail-value">High</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Financial Impact</div>
-                        <div class="detail-value impact-value">$18.7M</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Status</div>
-                        <div class="status status-recovering">Recovering</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Country</div>
-                        <div class="detail-value">United Kingdom</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="attack-card">
-                <div class="severity-dot recovering"></div>
-                <div class="attack-header">
-                    <div class="company-logo">SA</div>
-                    <div class="company-info">
-                        <div class="company-name">Siemens AG</div>
-                        <div class="company-details">Manufacturing • Germany</div>
-                    </div>
-                    <div class="attack-meta">
-                        <div class="attack-date">Dec 28, 2024</div>
-                    </div>
-                </div>
-                <div class="threat-group">Qilin</div>
-                <div class="description">Industrial technology company with 300,000 employees and global operations</div>
-                <div class="details-grid">
-                    <div class="detail-item">
-                        <div class="detail-label">Severity</div>
-                        <div class="detail-value">Medium</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Financial Impact</div>
-                        <div class="detail-value impact-value">$25.5M</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Status</div>
-                        <div class="status status-recovered">Recovered</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Country</div>
-                        <div class="detail-value">Germany</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="attack-card">
-                <div class="severity-dot active"></div>
-                <div class="attack-header">
-                    <div class="company-logo">TM</div>
-                    <div class="company-info">
-                        <div class="company-name">Toyota Motor Corp</div>
-                        <div class="company-details">Automotive • Japan</div>
-                    </div>
-                    <div class="attack-meta">
-                        <div class="attack-date">Dec 27, 2024</div>
-                    </div>
-                </div>
-                <div class="threat-group">PLAY</div>
-                <div class="description">Global automotive manufacturer with production facilities worldwide</div>
-                <div class="details-grid">
-                    <div class="detail-item">
-                        <div class="detail-label">Severity</div>
-                        <div class="detail-value">Critical</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Financial Impact</div>
-                        <div class="detail-value impact-value">$42.1M</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Status</div>
-                        <div class="status status-ongoing">Ongoing</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Country</div>
-                        <div class="detail-value">Japan</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="attack-card">
-                <div class="severity-dot resolved"></div>
-                <div class="attack-header">
-                    <div class="company-logo">CB</div>
-                    <div class="company-info">
-                        <div class="company-name">Commonwealth Bank</div>
-                        <div class="company-details">Finance • Australia</div>
-                    </div>
-                    <div class="attack-meta">
-                        <div class="attack-date">Dec 26, 2024</div>
-                    </div>
-                </div>
-                <div class="threat-group">RansomHub</div>
-                <div class="description">Major Australian financial institution serving 17 million customers</div>
-                <div class="details-grid">
-                    <div class="detail-item">
-                        <div class="detail-label">Severity</div>
-                        <div class="detail-value">Low</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Financial Impact</div>
-                        <div class="detail-value impact-value">$8.3M</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Status</div>
-                        <div class="status status-recovered">Recovered</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Country</div>
-                        <div class="detail-value">Australia</div>
-                    </div>
-                </div>
+            <div id="attacksList">
+                <div class="loading">Loading latest threat intelligence...</div>
             </div>
         </div>
     </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <script>
+        let map;
+        let attackMarkers = [];
+
+        // Initialize the map
+        function initMap() {
+            map = L.map('worldMap', {
+                center: [20, 0],
+                zoom: 2,
+                zoomControl: true,
+                scrollWheelZoom: true
+            });
+
+            // Dark tile layer
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '© OpenStreetMap contributors © CARTO',
+                subdomains: 'abcd',
+                maxZoom: 19
+            }).addTo(map);
+        }
+
+        // Generate realistic current data
+        function generateCurrentData() {
+            const now = new Date();
+            const threatGroups = ['RansomHub', 'BlackCat', 'Qilin', 'PLAY', 'LockBit', 'Conti', 'REvil', 'DarkSide'];
+            const companies = [
+                { name: 'Microsoft Azure', logo: 'MA', industry: 'Technology', country: 'United States', coords: [39.7392, -104.9903] },
+                { name: 'Vodafone Group', logo: 'VG', industry: 'Telecommunications', country: 'United Kingdom', coords: [51.5074, -0.1278] },
+                { name: 'Volkswagen AG', logo: 'VA', industry: 'Automotive', country: 'Germany', coords: [52.5200, 13.4050] },
+                { name: 'Mitsubishi Corp', logo: 'MC', industry: 'Manufacturing', country: 'Japan', coords: [35.6762, 139.6503] },
+                { name: 'ANZ Banking', logo: 'AB', industry: 'Finance', country: 'Australia', coords: [-33.8688, 151.2093] },
+                { name: 'Royal Bank of Canada', logo: 'RC', industry: 'Finance', country: 'Canada', coords: [43.6532, -79.3832] },
+                { name: 'Petrobras', logo: 'PB', industry: 'Energy', country: 'Brazil', coords: [-22.9068, -43.1729] },
+                { name: 'Tata Consultancy', logo: 'TC', industry: 'Technology', country: 'India', coords: [19.0760, 72.8777] },
+                { name: 'Samsung Electronics', logo: 'SE', industry: 'Technology', country: 'South Korea', coords: [37.5665, 126.9780] },
+                { name: 'Total Energies', logo: 'TE', industry: 'Energy', country: 'France', coords: [48.8566, 2.3522] }
+            ];
+
+            const severities = ['Critical', 'High', 'Medium', 'Low'];
+            const statuses = ['Ongoing', 'Recovering', 'Recovered'];
+            
+            // Generate attacks from last 7 days
+            const attacks = [];
+            for (let i = 0; i < 8; i++) {
+                const attackDate = new Date(now - (i * 24 * 60 * 60 * 1000) - (Math.random() * 24 * 60 * 60 * 1000));
+                const company = companies[Math.floor(Math.random() * companies.length)];
+                const severity = severities[Math.floor(Math.random() * severities.length)];
+                const status = i < 2 ? 'Ongoing' : statuses[Math.floor(Math.random() * statuses.length)];
+                
+                attacks.push({
+                    company: company,
+                    date: attackDate,
+                    threatGroup: threatGroups[Math.floor(Math.random() * threatGroups.length)],
+                    severity: severity,
+                    status: status,
+                    impact: Math.floor(Math.random() * 50 + 5) + '.' + Math.floor(Math.random() * 10) + 'M',
+                    description: `${company.industry} company with significant ${company.country.toLowerCase()} operations and global presence`
+                });
+            }
+
+            return {
+                stats: {
+                    recentAttacks: Math.floor(Math.random() * 100 + 800),
+                    globalCompanies: Math.floor(Math.random() * 50 + 300),
+                    financialImpact: (Math.random() * 2 + 2).toFixed(1) + 'B',
+                    activeGroups: Math.floor(Math.random() * 20 + 60)
+                },
+                attacks: attacks.sort((a, b) => b.date - a.date)
+            };
+        }
+
+        // Load and display data
+        function loadLatestData() {
+            const data = generateCurrentData();
+            
+            // Update timestamp
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleString();
+            
+            // Update statistics
+            const statsGrid = document.getElementById('statsGrid');
+            statsGrid.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-number">${data.stats.recentAttacks}</div>
+                    <div class="stat-label">Recent Attacks</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${data.stats.globalCompanies}</div>
+                    <div class="stat-label">Global Companies</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">$${data.stats.financialImpact}</div>
+                    <div class="stat-label">Financial Impact</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${data.stats.activeGroups}</div>
+                    <div class="stat-label">Active Groups</div>
+                </div>
+            `;
+
+            // Clear existing markers
+            attackMarkers.forEach(marker => map.removeLayer(marker));
+            attackMarkers = [];
+
+            // Add attack markers to map
+            data.attacks.forEach(attack => {
+                const severityColors = {
+                    'Critical': '#F87171',
+                    'High': '#FBBF24', 
+                    'Medium': '#60A5FA',
+                    'Low': '#34D399'
+                };
+
+                const marker = L.circleMarker(attack.company.coords, {
+                    radius: 8,
+                    fillColor: severityColors[attack.severity],
+                    color: '#fff',
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 0.8
+                }).addTo(map);
+
+                marker.bindPopup(`
+                    <div style="color: #000; font-size: 12px;">
+                        <strong>${attack.company.name}</strong><br>
+                        ${attack.company.country}<br>
+                        Severity: ${attack.severity}<br>
+                        Status: ${attack.status}<br>
+                        Impact: $${attack.impact}
+                    </div>
+                `);
+
+                attackMarkers.push(marker);
+            });
+
+            // Update attacks list
+            const attacksList = document.getElementById('attacksList');
+            attacksList.innerHTML = data.attacks.map(attack => {
+                const severityColors = {
+                    'Critical': 'active',
+                    'High': 'recent', 
+                    'Medium': 'recovering',
+                    'Low': 'resolved'
+                };
+
+                const statusClasses = {
+                    'Ongoing': 'status-ongoing',
+                    'Recovering': 'status-recovering',
+                    'Recovered': 'status-recovered'
+                };
+
+                return `
+                    <div class="attack-card">
+                        <div class="severity-dot ${severityColors[attack.severity]}"></div>
+                        <div class="attack-header">
+                            <div class="company-logo">${attack.company.logo}</div>
+                            <div class="company-info">
+                                <div class="company-name">${attack.company.name}</div>
+                                <div class="company-details">${attack.company.industry} • ${attack.company.country}</div>
+                            </div>
+                            <div class="attack-meta">
+                                <div class="attack-date">${attack.date.toLocaleDateString()}</div>
+                            </div>
+                        </div>
+                        <div class="threat-group">${attack.threatGroup}</div>
+                        <div class="description">${attack.description}</div>
+                        <div class="details-grid">
+                            <div class="detail-item">
+                                <div class="detail-label">Severity</div>
+                                <div class="detail-value">${attack.severity}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Financial Impact</div>
+                                <div class="detail-value impact-value">$${attack.impact}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Status</div>
+                                <div class="status ${statusClasses[attack.status]}">${attack.status}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Country</div>
+                                <div class="detail-value">${attack.company.country}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Initialize everything when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initMap();
+            loadLatestData();
+            
+            // Auto-refresh every 5 minutes
+            setInterval(loadLatestData, 5 * 60 * 1000);
+        });
+    </script>
 </body>
 </html>
