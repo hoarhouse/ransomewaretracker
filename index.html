@@ -223,6 +223,7 @@
             padding: 6px 0;
             border-bottom: 1px solid #374151;
             font-size: 11px;
+            gap: 8px;
         }
         
         .list-item:last-child {
@@ -418,19 +419,19 @@
                 <div class="legend">
                     <div class="legend-item">
                         <div class="legend-dot critical"></div>
-                        <span>Critical</span>
+                        <span>Active Threat</span>
                     </div>
                     <div class="legend-item">
                         <div class="legend-dot high"></div>
-                        <span>High</span>
+                        <span>Recent Attack</span>
                     </div>
                     <div class="legend-item">
                         <div class="legend-dot medium"></div>
-                        <span>Medium</span>
+                        <span>Investigating</span>
                     </div>
                     <div class="legend-item">
                         <div class="legend-dot low"></div>
-                        <span>Low</span>
+                        <span>Resolved</span>
                     </div>
                 </div>
             </div>
@@ -442,7 +443,7 @@
         <div class="dashboard-grid">
             <div class="section">
                 <div class="section-header">
-                    <span>Industries Under Attack</span>
+                    <span>Industries Under Attack (Last 30 Days) - Sorted by Total Attempts</span>
                 </div>
                 <div class="section-content" id="industriesData">
                     <div style="text-align: center; color: #6b7280; padding: 20px;">Loading...</div>
@@ -451,7 +452,7 @@
             
             <div class="section">
                 <div class="section-header">
-                    <span>Top Target Countries</span>
+                    <span>Top Target Countries (Last 7 Days) - Sorted by Total Attempts</span>
                 </div>
                 <div class="section-content" id="countriesData">
                     <div style="text-align: center; color: #6b7280; padding: 20px;">Loading...</div>
@@ -460,7 +461,7 @@
             
             <div class="section">
                 <div class="section-header">
-                    <span>Active Threat Groups</span>
+                    <span>Active Threat Groups (Current)</span>
                 </div>
                 <div class="section-content" id="threatGroupsData">
                     <div style="text-align: center; color: #6b7280; padding: 20px;">Loading...</div>
@@ -469,7 +470,7 @@
             
             <div class="section">
                 <div class="section-header">
-                    <span>Malware Variants</span>
+                    <span>Malware Variants (Last 24 Hours)</span>
                 </div>
                 <div class="section-content" id="malwareData">
                     <div style="text-align: center; color: #6b7280; padding: 20px;">Loading...</div>
@@ -480,7 +481,7 @@
         <div class="dashboard-grid">
             <div class="section">
                 <div class="section-header">
-                    <span>Attack Vectors (24h)</span>
+                    <span>Attack Vectors (Last 24 Hours)</span>
                 </div>
                 <div class="section-content" id="vectorsData">
                     <div style="text-align: center; color: #6b7280; padding: 20px;">Loading...</div>
@@ -489,7 +490,7 @@
             
             <div class="section">
                 <div class="section-header">
-                    <span>Ransom Demands</span>
+                    <span>Ransom Demands (Q4 2024)</span>
                 </div>
                 <div class="section-content" id="ransomData">
                     <div style="text-align: center; color: #6b7280; padding: 20px;">Loading...</div>
@@ -498,7 +499,7 @@
             
             <div class="section">
                 <div class="section-header">
-                    <span>Data Breach Impact</span>
+                    <span>Data Breach Impact (Last 30 Days)</span>
                 </div>
                 <div class="section-content" id="breachData">
                     <div style="text-align: center; color: #6b7280; padding: 20px;">Loading...</div>
@@ -507,7 +508,7 @@
             
             <div class="section">
                 <div class="section-header">
-                    <span>Recovery Times</span>
+                    <span>Recovery Times (Industry Avg)</span>
                 </div>
                 <div class="section-content" id="recoveryData">
                     <div style="text-align: center; color: #6b7280; padding: 20px;">Loading...</div>
@@ -560,25 +561,81 @@
             ];
 
             const industries = [
-                { name: 'Healthcare', attacks: Math.floor(Math.random() * 50 + 95), trend: '+23%' },
-                { name: 'Financial Services', attacks: Math.floor(Math.random() * 40 + 78), trend: '+34%' },
-                { name: 'Manufacturing', attacks: Math.floor(Math.random() * 35 + 62), trend: '+12%' },
-                { name: 'Education', attacks: Math.floor(Math.random() * 30 + 45), trend: '+8%' },
-                { name: 'Government', attacks: Math.floor(Math.random() * 25 + 41), trend: '+45%' },
-                { name: 'Energy/Utilities', attacks: Math.floor(Math.random() * 20 + 38), trend: '+67%' },
-                { name: 'Technology', attacks: Math.floor(Math.random() * 40 + 56), trend: '+19%' },
-                { name: 'Transportation', attacks: Math.floor(Math.random() * 15 + 28), trend: '+28%' }
+                { name: 'Healthcare', successfulAttacks: Math.floor(Math.random() * 30 + 45), totalAttempts: Math.floor(Math.random() * 200 + 380), trend: '+23%' },
+                { name: 'Financial Services', successfulAttacks: Math.floor(Math.random() * 25 + 35), totalAttempts: Math.floor(Math.random() * 180 + 320), trend: '+34%' },
+                { name: 'Manufacturing', successfulAttacks: Math.floor(Math.random() * 20 + 28), totalAttempts: Math.floor(Math.random() * 150 + 280), trend: '+12%' },
+                { name: 'Education', successfulAttacks: Math.floor(Math.random() * 18 + 22), totalAttempts: Math.floor(Math.random() * 120 + 240), trend: '+8%' },
+                { name: 'Government', successfulAttacks: Math.floor(Math.random() * 15 + 20), totalAttempts: Math.floor(Math.random() * 100 + 200), trend: '+45%' },
+                { name: 'Energy/Utilities', successfulAttacks: Math.floor(Math.random() * 12 + 18), totalAttempts: Math.floor(Math.random() * 90 + 180), trend: '+67%' },
+                { name: 'Technology', successfulAttacks: Math.floor(Math.random() * 22 + 30), totalAttempts: Math.floor(Math.random() * 140 + 260), trend: '+19%' },
+                { name: 'Transportation', successfulAttacks: Math.floor(Math.random() * 10 + 15), totalAttempts: Math.floor(Math.random() * 80 + 160), trend: '+28%' }
             ];
 
             const countries = [
-                { name: 'United States', attacks: Math.floor(Math.random() * 100 + 180), coords: [39.8283, -98.5795] },
-                { name: 'United Kingdom', attacks: Math.floor(Math.random() * 30 + 52), coords: [55.3781, -3.4360] },
-                { name: 'Germany', attacks: Math.floor(Math.random() * 25 + 41), coords: [51.1657, 10.4515] },
-                { name: 'Canada', attacks: Math.floor(Math.random() * 20 + 35), coords: [56.1304, -106.3468] },
-                { name: 'Australia', attacks: Math.floor(Math.random() * 15 + 28), coords: [-25.2744, 133.7751] },
-                { name: 'France', attacks: Math.floor(Math.random() * 20 + 33), coords: [46.6034, 1.8883] },
-                { name: 'Japan', attacks: Math.floor(Math.random() * 18 + 26), coords: [36.2048, 138.2529] },
-                { name: 'Netherlands', attacks: Math.floor(Math.random() * 12 + 22), coords: [52.1326, 5.2913] }
+                {
+                    name: 'United States',
+                    cities: [
+                        { name: 'New York', coords: [40.7128, -74.0060], status: 'active', attacks: 45 },
+                        { name: 'Los Angeles', coords: [34.0522, -118.2437], status: 'recent', attacks: 32 },
+                        { name: 'Chicago', coords: [41.8781, -87.6298], status: 'investigating', attacks: 28 },
+                        { name: 'Houston', coords: [29.7604, -95.3698], status: 'active', attacks: 38 },
+                        { name: 'Atlanta', coords: [33.7490, -84.3880], status: 'recent', attacks: 22 },
+                        { name: 'Seattle', coords: [47.6062, -122.3321], status: 'resolved', attacks: 15 }
+                    ]
+                },
+                {
+                    name: 'United Kingdom',
+                    cities: [
+                        { name: 'London', coords: [51.5074, -0.1278], status: 'active', attacks: 42 },
+                        { name: 'Manchester', coords: [53.4808, -2.2426], status: 'recent', attacks: 18 },
+                        { name: 'Birmingham', coords: [52.4862, -1.8904], status: 'investigating', attacks: 12 }
+                    ]
+                },
+                {
+                    name: 'Germany',
+                    cities: [
+                        { name: 'Berlin', coords: [52.5200, 13.4050], status: 'recent', attacks: 35 },
+                        { name: 'Munich', coords: [48.1351, 11.5820], status: 'investigating', attacks: 24 },
+                        { name: 'Frankfurt', coords: [50.1109, 8.6821], status: 'active', attacks: 29 }
+                    ]
+                },
+                {
+                    name: 'Canada',
+                    cities: [
+                        { name: 'Toronto', coords: [43.6532, -79.3832], status: 'active', attacks: 31 },
+                        { name: 'Vancouver', coords: [49.2827, -123.1207], status: 'recent', attacks: 19 },
+                        { name: 'Montreal', coords: [45.5017, -73.5673], status: 'resolved', attacks: 14 }
+                    ]
+                },
+                {
+                    name: 'Australia',
+                    cities: [
+                        { name: 'Sydney', coords: [-33.8688, 151.2093], status: 'recent', attacks: 26 },
+                        { name: 'Melbourne', coords: [-37.8136, 144.9631], status: 'investigating', attacks: 21 },
+                        { name: 'Brisbane', coords: [-27.4698, 153.0251], status: 'resolved', attacks: 8 }
+                    ]
+                },
+                {
+                    name: 'France',
+                    cities: [
+                        { name: 'Paris', coords: [48.8566, 2.3522], status: 'active', attacks: 33 },
+                        { name: 'Lyon', coords: [45.7640, 4.8357], status: 'recent', attacks: 16 }
+                    ]
+                },
+                {
+                    name: 'Japan',
+                    cities: [
+                        { name: 'Tokyo', coords: [35.6762, 139.6503], status: 'recent', attacks: 39 },
+                        { name: 'Osaka', coords: [34.6937, 135.5023], status: 'investigating', attacks: 17 }
+                    ]
+                },
+                {
+                    name: 'Netherlands',
+                    cities: [
+                        { name: 'Amsterdam', coords: [52.3676, 4.9041], status: 'investigating', attacks: 23 },
+                        { name: 'Rotterdam', coords: [51.9244, 4.4777], status: 'resolved', attacks: 11 }
+                    ]
+                }
             ];
 
             const malwareStrains = [
@@ -592,12 +649,12 @@
             ];
 
             const attackVectors = [
-                { name: 'Phishing Email', percentage: Math.floor(Math.random() * 10 + 35) },
-                { name: 'RDP Exploitation', percentage: Math.floor(Math.random() * 8 + 22) },
-                { name: 'Supply Chain', percentage: Math.floor(Math.random() * 5 + 15) },
-                { name: 'Zero-day Exploit', percentage: Math.floor(Math.random() * 3 + 8) },
-                { name: 'Insider Threat', percentage: Math.floor(Math.random() * 2 + 5) },
-                { name: 'VPN Vulnerability', percentage: Math.floor(Math.random() * 6 + 12) }
+                { name: 'Phishing Email', percentage: Math.floor(Math.random() * 10 + 35), count: Math.floor(Math.random() * 50 + 180) },
+                { name: 'RDP Exploitation', percentage: Math.floor(Math.random() * 8 + 22), count: Math.floor(Math.random() * 40 + 120) },
+                { name: 'Supply Chain', percentage: Math.floor(Math.random() * 5 + 15), count: Math.floor(Math.random() * 25 + 80) },
+                { name: 'Zero-day Exploit', percentage: Math.floor(Math.random() * 3 + 8), count: Math.floor(Math.random() * 15 + 45) },
+                { name: 'Insider Threat', percentage: Math.floor(Math.random() * 2 + 5), count: Math.floor(Math.random() * 10 + 30) },
+                { name: 'VPN Vulnerability', percentage: Math.floor(Math.random() * 6 + 12), count: Math.floor(Math.random() * 20 + 65) }
             ];
 
             const ransomDemands = [
@@ -686,27 +743,27 @@
             statsOverview.innerHTML = `
                 <div class="stat-card critical">
                     <div class="stat-number">${data.stats.activeThreats}</div>
-                    <div class="stat-label">Active Threats</div>
+                    <div class="stat-label">Active Threats (Current)</div>
                 </div>
                 <div class="stat-card critical">
                     <div class="stat-number">${data.stats.globalAttacks}</div>
-                    <div class="stat-label">Global Attacks (24h)</div>
+                    <div class="stat-label">Global Attacks (Last 24h)</div>
                 </div>
                 <div class="stat-card high">
-                    <div class="stat-number">$${data.stats.financialImpact}</div>
-                    <div class="stat-label">Financial Impact</div>
+                    <div class="stat-number">${data.stats.financialImpact}</div>
+                    <div class="stat-label">Financial Impact (Last 24h)</div>
                 </div>
                 <div class="stat-card high">
                     <div class="stat-number">${data.stats.blockedAttempts.toLocaleString()}</div>
-                    <div class="stat-label">Blocked Attempts</div>
+                    <div class="stat-label">Blocked Attempts (Last 24h)</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-number">${data.stats.compromisedSystems.toLocaleString()}</div>
-                    <div class="stat-label">Compromised Systems</div>
+                    <div class="stat-label">Compromised Systems (Last 24h)</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-number">${data.stats.dataExfiltrated}</div>
-                    <div class="stat-label">Data Exfiltrated</div>
+                    <div class="stat-label">Data Exfiltrated (Last 24h)</div>
                 </div>
             `;
 
@@ -714,48 +771,86 @@
             attackMarkers.forEach(marker => map.removeLayer(marker));
             attackMarkers = [];
 
-            // Add markers to map
+            // Clear existing markers
+            attackMarkers.forEach(marker => map.removeLayer(marker));
+            attackMarkers = [];
+
+            // Add city-level markers with different animations
             data.countries.forEach(country => {
-                const severity = country.attacks > 100 ? 'critical' : country.attacks > 50 ? 'high' : country.attacks > 25 ? 'medium' : 'low';
-                const colors = { critical: '#dc2626', high: '#ea580c', medium: '#1e40af', low: '#059669' };
-                
-                const marker = L.circleMarker(country.coords, {
-                    radius: Math.min(country.attacks / 12 + 4, 16),
-                    fillColor: colors[severity],
-                    color: '#fff',
-                    weight: 1,
-                    opacity: 1,
-                    fillOpacity: 0.8
-                }).addTo(map);
+                country.cities.forEach(city => {
+                    const statusColors = {
+                        active: '#dc2626',      // Red - pulsating fast
+                        recent: '#ea580c',      // Orange - pulsating medium
+                        investigating: '#1e40af', // Blue - pulsating slow
+                        resolved: '#059669'     // Green - static
+                    };
 
-                marker.bindPopup(`
-                    <div style="color: #000; font-size: 11px;">
-                        <strong>${country.name}</strong><br>
-                        ${country.attacks} attacks detected<br>
-                        Severity: ${severity.toUpperCase()}
-                    </div>
-                `);
+                    const marker = L.circleMarker(city.coords, {
+                        radius: Math.min(city.attacks / 3 + 4, 12),
+                        fillColor: statusColors[city.status],
+                        color: '#fff',
+                        weight: 2,
+                        opacity: 1,
+                        fillOpacity: 0.9,
+                        className: `threat-marker marker-${city.status}`
+                    }).addTo(map);
 
-                attackMarkers.push(marker);
+                    const statusText = {
+                        active: 'ACTIVE THREAT',
+                        recent: 'RECENT ATTACK',
+                        investigating: 'INVESTIGATING',
+                        resolved: 'RESOLVED'
+                    };
+
+                    marker.bindPopup(`
+                        <div style="color: #000; font-size: 11px; font-weight: 500;">
+                            <strong>${city.name}, ${country.name}</strong><br>
+                            <span style="color: ${statusColors[city.status]}; font-weight: bold;">${statusText[city.status]}</span><br>
+                            ${city.attacks} incidents detected<br>
+                            Last updated: ${new Date().toLocaleTimeString()}
+                        </div>
+                    `);
+
+                    attackMarkers.push(marker);
+                });
             });
 
             // Update all data sections
             document.getElementById('industriesData').innerHTML = data.industries
-                .sort((a, b) => b.attacks - a.attacks)
+                .sort((a, b) => b.totalAttempts - a.totalAttempts)
                 .map(industry => `
                     <div class="list-item">
                         <span class="item-name">${industry.name}</span>
-                        <span class="item-value ${industry.attacks > 80 ? 'critical' : industry.attacks > 50 ? 'high' : 'medium'}">${industry.attacks} <span class="trend-up">${industry.trend}</span></span>
+                        <div style="text-align: right;">
+                            <div class="item-value ${industry.successfulAttacks > 40 ? 'critical' : industry.successfulAttacks > 25 ? 'high' : 'medium'}">${industry.successfulAttacks} breaches | ${industry.totalAttempts} attempts</div>
+                            <div class="trend-up">${industry.trend} vs last month</div>
+                        </div>
                     </div>
                 `).join('');
 
             document.getElementById('countriesData').innerHTML = data.countries
-                .sort((a, b) => b.attacks - a.attacks)
+                .map(country => {
+                    const totalAttacks = country.cities.reduce((sum, city) => sum + city.attacks, 0);
+                    const activeCount = country.cities.filter(city => city.status === 'active').length;
+                    const recentCount = country.cities.filter(city => city.status === 'recent').length;
+                    
+                    return {
+                        name: country.name,
+                        totalAttacks: totalAttacks,
+                        activeCount: activeCount,
+                        recentCount: recentCount,
+                        statusSummary: `${activeCount} active, ${recentCount} recent`
+                    };
+                })
+                .sort((a, b) => b.totalAttacks - a.totalAttacks)
                 .slice(0, 8)
                 .map(country => `
                     <div class="list-item">
                         <span class="item-name">${country.name}</span>
-                        <span class="item-value ${country.attacks > 100 ? 'critical' : country.attacks > 50 ? 'high' : 'medium'}">${country.attacks}</span>
+                        <div style="text-align: right;">
+                            <div class="item-value ${country.totalAttacks > 100 ? 'critical' : country.totalAttacks > 50 ? 'high' : 'medium'}">${country.totalAttacks} incidents</div>
+                            <div style="font-size: 9px; color: #6b7280;">${country.statusSummary}</div>
+                        </div>
                     </div>
                 `).join('');
 
@@ -764,6 +859,7 @@
                 .map(group => `
                     <div class="list-item">
                         <span class="item-name">${group.name}</span>
+                        <span class="item-value">${group.attacks} operations</span>
                         <span class="status-badge status-${group.activity.toLowerCase()}">${group.activity}</span>
                     </div>
                 `).join('');
@@ -773,7 +869,7 @@
                 .map(malware => `
                     <div class="list-item">
                         <span class="item-name">${malware.name}</span>
-                        <span class="item-value">${malware.detections.toLocaleString()}</span>
+                        <span class="item-value">${malware.detections.toLocaleString()} detections</span>
                     </div>
                 `).join('');
 
@@ -782,10 +878,7 @@
                 .map(vector => `
                     <div class="list-item">
                         <span class="item-name">${vector.name}</span>
-                        <span class="item-value">${vector.percentage}%</span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: ${vector.percentage}%"></div>
+                        <span class="item-value">${vector.count} attacks (${vector.percentage}%)</span>
                     </div>
                 `).join('');
 
@@ -793,7 +886,7 @@
                 .map(demand => `
                     <div class="list-item">
                         <span class="item-name">${demand.range}</span>
-                        <span class="item-value">${demand.count}</span>
+                        <span class="item-value">${demand.count} cases</span>
                     </div>
                 `).join('');
 
@@ -801,7 +894,7 @@
                 .map(breach => `
                     <div class="list-item">
                         <span class="item-name">${breach.type}</span>
-                        <span class="item-value">${breach.count}</span>
+                        <span class="item-value">${breach.count} records</span>
                     </div>
                 `).join('');
 
@@ -809,7 +902,7 @@
                 .map(recovery => `
                     <div class="list-item">
                         <span class="item-name">${recovery.timeframe}</span>
-                        <span class="item-value">${recovery.percentage}%</span>
+                        <span class="item-value">${recovery.percentage}% of companies</span>
                     </div>
                 `).join('');
 
