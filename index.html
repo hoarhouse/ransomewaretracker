@@ -1209,14 +1209,31 @@
             });
 
             return baseIndustries.map(industry => {
-                const industryKey = industry.name.split(' ')[0]; // Healthcare, Financial, etc.
-                const realBreaches = breachByIndustry[industryKey] || 0;
+                // Map industry names to breach types more accurately
+                let hasRealData = false;
+                const industryKey = industry.name.toLowerCase();
+                
+                if (industryKey.includes('healthcare') && breachByIndustry['Healthcare']) {
+                    hasRealData = true;
+                } else if (industryKey.includes('financial') && breachByIndustry['Finance']) {
+                    hasRealData = true;
+                } else if (industryKey.includes('government') && breachByIndustry['Government']) {
+                    hasRealData = true;
+                } else if (industryKey.includes('technology') && breachByIndustry['Technology']) {
+                    hasRealData = true;
+                } else if (industryKey.includes('education') && breachByIndustry['Education']) {
+                    hasRealData = true;
+                } else if (industryKey.includes('manufacturing') && breachByIndustry['Manufacturing']) {
+                    hasRealData = true;
+                }
+                
+                const realBreaches = hasRealData ? 1 : 0;
                 
                 return {
                     ...industry,
                     successfulAttacks: industry.successfulAttacks + realBreaches * 8, // Amplify real data
                     totalAttempts: industry.totalAttempts + realBreaches * 25,
-                    hasRealData: realBreaches > 0
+                    hasRealData: hasRealData
                 };
             });
         }
